@@ -1,0 +1,209 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This is the CloudFormation Template to create Vpc creation as well as the Route Tables
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: "Network Configuration"
+        Parameters: 
+          - VPC01P
+      -
+        Label:
+          default: "Tags"
+        Parameters:
+          - Environment
+          - ProjectName
+          - ProjectID
+          - ResourceName
+
+
+Parameters:
+  VPC01P:
+    Type: String
+    Default: 10.0.0.0/16
+    AllowedValues:
+      - 10.0.0.0/16
+      - 10.0.0.0/24
+      - 10.0.0.0/28
+    Description: Enter the value of VPC CIDR
+
+  Environment:
+      Type: String
+      Default: dev
+      AllowedValues:
+           - dev
+           - QA
+           - Prod
+  ProjectName:
+    Type: String
+    Description: Enter the name of the Project
+
+  ProjectID:
+    Type: String
+    Description: Enter the name of the Project ID
+  
+  ResourceName:
+    Type: String
+    Description: Enter the name of the ResourceID
+
+
+Resources:
+  vpc01:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VPC01P
+      EnableDnsHostnames: True
+      EnableDnsSupport: True
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+  
+  vpcsubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2a
+      CidrBlock: 10.0.1.0/24
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+      VpcId: !Ref VPC01P
+
+  vpcsubnet02:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2b
+      CidrBlock: 10.0.2.0/24
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+      VpcId: !Ref VPC01P
+
+  vpcprivatesubnet01:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2b
+      CidrBlock: 10.0.3.0/24
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+      VpcId: !Ref VPC01P
+  
+  vpcprivatesubnet02:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: us-east-2b
+      CidrBlock: 10.0.4.0/24
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+      VpcId: !Ref VPC01P
+  
+  IG01:
+   Type: AWS::EC2::InternetGateway
+   Properties:
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name
+  
+  vpcinternetgatewayattached:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        InternetGatewayId: !Ref IG01
+        VpcId: !Ref VPC01P
+  
+  RouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      Tags: 
+        - Value: !Ref Environment
+          Key: Environment
+
+        - Value: !Ref ProjectName
+          Key: Project Name
+
+        - Value: !Ref ProjectID
+          Key: Project ID
+
+        - Value: !Ref ResourceName
+          Key: Resource Name       
+      VpcId: !Ref VPC01P
+
+  PublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: vpcinternetgatewayattached
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref IG01
+      RouteTableId: !Ref RouteTable
+  
+  PublicSubnetRouteTableAssociation01:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+         RouteTableId: !Ref RouteTable
+         SubnetId: !Ref vpcsubnet01
+     
+  PublicSubnetRouteTableAssociation02:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+         RouteTableId: !Ref RouteTable
+         SubnetId: !Ref vpcsubnet02
+
+
+  
+
