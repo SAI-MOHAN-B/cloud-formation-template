@@ -4,7 +4,7 @@ Resources:
   mohans3bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: demobucketdata001
+      BucketName: demobucketdata00001
       PublicAccessBlockConfiguration:
            BlockPublicAcls: false
            BlockPublicPolicy: false
