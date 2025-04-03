@@ -3,7 +3,7 @@
     {
     "EC2AMIID":"ami-084568db4383264d4",
     "InstanceTypeParameter":"t2.micro",
-     "BucketInstanceParameters":"demobucket001"
+     "BucketInstanceParameters":"demobucketdata00001"
     } 
     
 }
